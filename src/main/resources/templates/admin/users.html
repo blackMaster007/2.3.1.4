@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+    <style>table th, table td {
+        padding: 5px;
+    }</style>
+</head>
+<body>
+<div th:each="user : ${users}">
+    <a th:href="@{/admin/user/{id}(id=${user.getId()})}"
+       th:text="${user.getLastName() + ' ' + user.getUsername()}">user</a>
+</div>
+
+<br/>
+<hr/>
+
+<div>
+    <a href="/admin/new">Добавить нового пользователя</a>
+</div>
+
+<hr/>
+<br/>
+
+<div>
+    <a href="/logout">Выйти</a>
+</div>
+</body>
+</html>
