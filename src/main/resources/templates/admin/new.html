@@ -1,21 +1,42 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:form="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>new user</title>
 </head>
 <body>
-<form th:method="POST" th:action="@{/admin/}" th:object="${user}">
+<form th:method="POST" th:action="@{/admin/new}" th:object="${user}">
+<p>
     <label for="name">Имя: </label>
     <input type="text" th:field="*{username}" id="name"/>
+</p>
     <br/>
+    <p>
     <label for="lastname">Фамилия: </label>
     <input type="text" th:field="*{lastName}" id="lastname">
+        <p/>
     <br/>
+    <p>
     <label for="age">Возраст: </label>
     <input type="text" th:field="*{age}" id="age">
+    <p/>
     <br/>
-
+<!--    <div>-->
+<!--        <form:input type="password" path="password" placeholder="Password"></form:input>-->
+<!--    </div>-->
+    <p>
+        <label>Roles:
+            <input type="checkbox" name="roles"
+                   th:each="role : ${allRoles}"
+                   th:text="${role.getName}"
+                   th:value="${role.getId}"
+                   th:field="*{roles}"
+            />
+        </label>
+    </p>
+    <label for="password">Пароль: </label>
+    <input type="text" th:field="*{password}" id="password">
+    <br/>
     <input type="submit" value="Добавить"/>
 </form>
 <br/>

@@ -5,16 +5,34 @@
     <title>edit</title>
 </head>
 <body>
-<form th:method="PATCH" th:action="@{/admin/{id}(id=${user.getId()})}" th:object="${user}">
+<form th:method="PATCH" th:action="@{/admin/{id}/edit(id=${user.getId()})}" th:object="${user}">
+    <br/>
+    <p>
     <label for="name">Имя: </label>
     <input type="text" th:field="*{username}" id="name"/>
-    <br/>
+    </p>
+        <br/>
+    <p>
     <label for="lastname">Фамилия: </label>
     <input type="text" th:field="*{lastName}" id="lastname">
+    </p>
     <br/>
+    <p>
     <label for="age">Возраст: </label>
     <input type="text" th:field="*{age}" id="age">
-    <br/>
+    </p>
+        <br/>
+    <p>
+        <label>Roles:
+            <input type="checkbox" name="roles"
+                   th:each="role : ${allRoles}"
+                   th:text="${role.getName}"
+                   th:value="${role.getId}"
+                   th:field="*{roles}"
+            />
+        </label>
+    </p>
+
     <input type="submit" value="Изменить"/>
 </form>
 <br/>

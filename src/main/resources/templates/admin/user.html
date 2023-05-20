@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 <head>
     <title>Spring Security Example</title>
 </head>
@@ -9,6 +8,8 @@
 <p th:text="${'Имя: ' + user.getUsername()}">VALUE</p>
 <p th:text="${'Фамилия: ' + user.getLastName}">VALUE</p>
 <p th:text="${'Возраст: ' + user.getAge}">VALUE</p>
+<p th:text="${'Роль: ' + user.getRoles()}">VALUE</p>
+
 <br/>
 <a th:href="@{/admin/{id}/edit(id=${user.getId()})}">Изменить</a>
 <br/>
