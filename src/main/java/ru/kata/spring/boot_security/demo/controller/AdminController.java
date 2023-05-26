@@ -9,13 +9,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.kata.spring.boot_security.demo.models.Role;
-import ru.kata.spring.boot_security.demo.repository.RoleRepository;
-import ru.kata.spring.boot_security.demo.service.UserService;
 import ru.kata.spring.boot_security.demo.models.User;
+import ru.kata.spring.boot_security.demo.service.RoleService;
+import ru.kata.spring.boot_security.demo.service.UserService;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 @Controller
@@ -23,34 +21,26 @@ import java.util.Set;
 public class AdminController {
 
     private final UserService userService;
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
+
 
 
     @Autowired
-    public AdminController(UserService userService, RoleRepository roleRepository) {
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
-        this.roleRepository = roleRepository;
+        this.roleService = roleService;
     }
 
 
-//    @GetMapping("/new")
-//    public String createNewUser(Model model) {
-//        System.out.println("start");
-//        model.addAttribute("user", new User());
-//        System.out.println("finish");
-//        return "/admin/new";
-//    }
+
 
     @PostMapping("/new")
     public String newUser(@ModelAttribute("user") User user,
-                          @RequestParam(value = "selectedRoles", required = false) String[] selectedRoles){
-        if (selectedRoles != null) {
-            Set<Role> roles = new HashSet<>();
-            for (String elemRoles : selectedRoles) {
-                roles.add(userService.getRole(elemRoles));
-            }
-            user.setRoles(roles);
-        }
+                          @RequestParam("roles") ArrayList<Long> roles) {
+
+        Set<Role> roleSet = new HashSet<>((Collection<? extends Role>)
+                roleService.getRolesById(roles));
+        user.setRoles(roleSet);
         userService.save(user);
         return "redirect:/admin/";
     }
@@ -58,56 +48,47 @@ public class AdminController {
     @GetMapping("/new")
     public ModelAndView newUser() {
         User user = new User();
-        ModelAndView mav = new ModelAndView("admin/new");
+        ModelAndView mav = new ModelAndView("admin/users");
         mav.addObject("user", user);
 
-        List<Role> roles = (List<Role>) roleRepository.findAll();
+        List<Role> roles = roleService.findAll();
 
         mav.addObject("allRoles", roles);
 
         return mav;
     }
 
-    @GetMapping("{id}/edit")
-    public ModelAndView editUser(@PathVariable(name = "id") Long id) {
-        User user = userService.showUser(id);
-        ModelAndView mav = new ModelAndView("admin/edit");
-        mav.addObject("user", user);
-
-        List<Role> roles = (List<Role>) roleRepository.findAll();
-
-        mav.addObject("allRoles", roles);
-
-        return mav;
-    }
 
     @PatchMapping("/{id}/edit")
-    public String update(@ModelAttribute("user") User user) {
+    public String update(@ModelAttribute("user") User user,
+                         @RequestParam("roles") ArrayList<Long> roles) {
+
+        Set<Role> roleSet = new HashSet<>(roleService.getRolesById(roles));
+        user.setRoles(roleSet);
         userService.save(user);
         return "redirect:/admin/";
     }
-//
-//    @GetMapping("/{id}/edit")
-//    public String edit(@RequestParam(value = "id") Long id, Model model) {
-//        model.addAttribute("user", userService.showUser(id));
-//        model.addAttribute("roles", userService.getRoles());
-//        return "/admin/edit";
-//    }
 
     @GetMapping("/")
-    public String showUsers(Model model) {
+    public String showUsers(Model model,
+                            @ModelAttribute("user") User user) {
         model.addAttribute("users", userService.listUsers());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        user = (User) authentication.getPrincipal();
+        model.addAttribute("user", user);
         return "/admin/users";
     }
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable("id") Long id) {
-        userService.remove(id);
+    public String delete(@ModelAttribute("user") User user) {
+        userService.remove(user);
         return "redirect:/admin/";
     }
 
-    @GetMapping("/user/{id}")
-    public String showUser(Model model, @PathVariable("id") Long id) {
-        model.addAttribute("user", userService.showUser(id));
+    @GetMapping("/user")
+    public String showUser(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
+        model.addAttribute("user", user);
         return "/admin/user";
     }
 

@@ -52,6 +52,7 @@ public class Role implements GrantedAuthority{
 
     @Override
     public String toString() {
-        return name;
+        StringBuilder sb = new StringBuilder(name).replace(0,5,"");
+        return sb.toString();
     }
 }

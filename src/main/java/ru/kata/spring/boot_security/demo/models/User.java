@@ -6,6 +6,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import java.util.*;
 
 
@@ -25,6 +26,10 @@ public class User implements UserDetails {
     @Column(name = "age")
     private int age;
 
+    @Column(name = "email")
+    @Email
+    private String email;
+
     @Column(name = "password")
     private String password;
 
@@ -35,11 +40,13 @@ public class User implements UserDetails {
     private Set<Role> roles = new HashSet<>();
 
 
-    public User(String username, String lastName, int age, String password) {
+    public User(String username, String lastName, int age, String email, String password, Set<Role> roles) {
         this.username = username;
         this.lastName = lastName;
         this.age = age;
+        this.email = email;
         this.password = password;
+        this.roles = roles;
     }
 
     public User() {
@@ -58,8 +65,15 @@ public class User implements UserDetails {
         return "User{" +
                 "username='" + username + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", age=" + age +
+                ", age=" + age + '\'' +
+                ", email=" + email + '\'' +
+                ", role=" + roles +
                 '}';
+    }
+    public String toStringRoles() {
+        StringBuilder sb = new StringBuilder();
+        roles.stream().forEach(r -> sb.append(r.toString()).append(" "));
+        return sb.toString();
     }
 
     public void setUsername(String username) {
@@ -80,6 +94,14 @@ public class User implements UserDetails {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override
